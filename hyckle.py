@@ -247,7 +247,6 @@ class Hyckle:
         self.add(key, obj)
 
     def flush(self):
-        print('fsf')
         self.hyckle_handle.writelines(self.buffer.values())
 
         # make sure write to disk
