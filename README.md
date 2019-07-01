@@ -3,6 +3,12 @@
 **Hyckle是pickle的一个高层封装，可以为所有可pickle的python变量提供数据序列化，同时支持局部读写，拥有更好的压缩率（文件大小在默认模式下比原生pickle小了约50%-60%）,并更节省内存。**
 
 ---
+
+**Installation**
+
+    pip install hyckle
+
+---
 **Demo:**
 
 **Basic Usage**
