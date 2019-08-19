@@ -12,7 +12,7 @@ __git__ = 'https://github.com/zylo117/hyckle'
 """
 Changelog:
 
-2019-07-04: 1.0.0, first publish.
+2019-06-26: 1.0.0, first publish.
 2019-08-19: 1.0.1, add __setitem__ method.
 """
 
