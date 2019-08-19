@@ -18,6 +18,11 @@
     hk = Hyckle('helloworld.hyckle')
     
     # use hyckle as a dict
+    hk['test_0'] = any_pickleable_object_0
+    hk['test_1'] = any_pickleable_object_1
+    hk['test_2'] = any_pickleable_object_2
+    hk['test_3'] = any_pickleable_object_3
+    # or
     hk.add('test_0', any_pickleable_object_0)
     hk.add('test_1',any_pickleable_object_1)
     hk.add('test_2',any_pickleable_object_2)

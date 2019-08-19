@@ -6,9 +6,15 @@ import lzma
 import os
 import pickle
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __git__ = 'https://github.com/zylo117/hyckle'
 
+"""
+Changelog:
+
+2019-07-04: 1.0.0, first publish.
+2019-08-19: 1.0.1, add __setitem__ method.
+"""
 
 class Hyckle:
     def __init__(self, filepath, compression='gzip', buffer_size=16, ignore_data_corruption=False):
@@ -93,6 +99,22 @@ class Hyckle:
             return [self[i] for i in range(*item.indices(len(self)))]
         else:
             return None
+
+    def __setitem__(self, key, value):
+        if isinstance(key, str):
+            self.add(key, value)
+        elif isinstance(key, int):
+            if key < 0:
+                raise IndexError('Hyckle index should be larger than 0.')
+            elif key > len(self):
+                raise IndexError('Hyckle index should be smaller than its maximum length.')
+            else:
+                self.add(str(key), value)
+        elif isinstance(key, slice):
+            for i, j in enumerate(range(*key.indices(len(self)))):
+                self.__setitem__(j, value[i])
+        else:
+            raise IndexError('invalid index.')
 
     def _create_hyckle(self, compression):
         with open(self.filepath, 'w') as f:
