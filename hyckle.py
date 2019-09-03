@@ -1,3 +1,5 @@
+# Author: Carl Cheung
+
 import base64
 import fileinput
 import gzip
@@ -6,7 +8,7 @@ import lzma
 import os
 import pickle
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __git__ = 'https://github.com/zylo117/hyckle'
 
 """
@@ -14,7 +16,9 @@ Changelog:
 
 2019-06-26: 1.0.0, first publish.
 2019-08-19: 1.0.1, add __setitem__ method.
+2019-09-03: 1.0.2, update second loop bug; update test script
 """
+
 
 class Hyckle:
     def __init__(self, filepath, compression='gzip', buffer_size=16, ignore_data_corruption=False):
@@ -255,6 +259,8 @@ class Hyckle:
             if new_line != old_line:
                 self._mod_line(key, new_line)
 
+        self.current_counter = 0
+
         # flush to disk if buffer is full
         if len(self.buffer) >= self.buffer_size:
             self.flush()
@@ -290,8 +296,9 @@ class Hyckle:
             self.buffer.pop(key)
         else:
             self._mod_line(key, '<REMOVED>')
-            self.keys.remove(key)
-            self.ttl_counter -= 1
+
+        self.ttl_counter -= 1
+        self.keys.remove(key)
 
     def close(self):
         self.flush()
