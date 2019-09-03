@@ -78,7 +78,9 @@ class Dog:
 hk['dog'] = Dog()
 print('retrieve variable from hyckle:')
 dog = hk[-1]
-print('use this wariable\'s class-method:')
+print('check this variable\'s class-variable:')
+print(dog.brain.shape)
+print('use this variable\'s class-method:')
 dog.sleep()
 
 # flush to disk.
