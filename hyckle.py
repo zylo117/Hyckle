@@ -8,7 +8,7 @@ import lzma
 import os
 import pickle
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 __git__ = 'https://github.com/zylo117/hyckle'
 
 """
@@ -17,6 +17,8 @@ Changelog:
 2019-06-26: 1.0.0, first publish.
 2019-08-19: 1.0.1, add __setitem__ method.
 2019-09-03: 1.0.2, update second loop bug; update test script
+2019-09-03: 1.0.3, add __iter__ method, fix iterable issue, update test script.
+2019-09-03: 1.0.4, create a alternative version of hyckle in cython
 """
 
 
@@ -88,6 +90,7 @@ class Hyckle:
 
     def __next__(self):
         if self.current_counter == self.ttl_counter:
+            self.current_counter = 0
             raise StopIteration
         else:
             obj = self.get(self.keys[self.current_counter])

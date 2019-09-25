@@ -6,6 +6,25 @@ from hyckle import Hyckle
 # This will create a new hyckle file if not exists or reload a existed hyckle file.
 hk = Hyckle('helloworld.hyckle')
 
+# create a super complex variable
+import numpy as np
+import time
+
+
+class Dog:
+    def __init__(self):
+        self.weight = 50
+        self.brain = np.random.randint(0, 99,
+                                       [np.random.randint(0, 99), np.random.randint(0, 99), np.random.randint(0, 99)])
+        self.stamina = 50
+
+    def sleep(self):
+        for i in range(5):
+            time.sleep(1)
+            self.stamina += 1
+            print(self.stamina)
+
+
 # use hyckle as a dict
 hk['test_0'] = 1
 hk['test_1'] = [2]
@@ -56,28 +75,9 @@ print(hk.keys)
 # magic time
 print('time to try on some complex variable:')
 
-# create a super complex variable
-import numpy as np
-import time
-
-
-class Dog:
-    def __init__(self):
-        self.weight = 50
-        self.brain = np.random.randint(0, 99,
-                                       [np.random.randint(0, 99), np.random.randint(0, 99), np.random.randint(0, 99)])
-        self.stamina = 50
-
-    def sleep(self):
-        for i in range(5):
-            time.sleep(1)
-            self.stamina += 1
-            print(self.stamina)
-
-
 hk['dog'] = Dog()
 print('retrieve variable from hyckle:')
-dog = hk[-1]
+dog = hk['dog']
 print('check this variable\'s class-variable:')
 print(dog.brain.shape)
 print('use this variable\'s class-method:')
