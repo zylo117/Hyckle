@@ -18,9 +18,12 @@ Changelog:
 2019-08-19: 1.0.1, add __setitem__ method.
 2019-09-03: 1.0.2, update second loop bug; update test script
 2019-09-03: 1.0.3, add __iter__ method, fix iterable issue, update test script.
-2019-09-03: 1.0.4, create a alternative version of hyckle in cython
 """
 
+
+# TODO: store data in bytes instead of string,
+#  to speed up and save more space,
+#  keep track of every key's start and end positions.
 
 class Hyckle:
     def __init__(self, filepath, compression='gzip', buffer_size=16, ignore_data_corruption=False):
@@ -306,3 +309,8 @@ class Hyckle:
     def close(self):
         self.flush()
         self.hyckle_handle.close()
+
+
+def fast_serialize(obj):
+    # TODO: implement np.ndarray.obj_to_bytes()
+    raise NotImplementedError
