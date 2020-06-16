@@ -1,14 +1,25 @@
-# Author: Carl Cheung
+# Author: Zylo117
 
 import base64
 import fileinput
 import gzip
 import linecache
+import logging
 import lzma
 import os
 import pickle
 
-__version__ = '1.0.3'
+logger = logging.getLogger(__name__)
+try:
+    import zstd
+
+    USE_ZSTD = True
+    logger.info('using zstd as compression backend')
+except:
+    USE_ZSTD = False
+    logger.info('using default compression backend, to speed up, you should install zstd using "pip install zstd"')
+
+__version__ = '1.0.4'
 __git__ = 'https://github.com/zylo117/hyckle'
 
 """
@@ -18,6 +29,7 @@ Changelog:
 2019-08-19: 1.0.1, add __setitem__ method.
 2019-09-03: 1.0.2, update second loop bug; update test script
 2019-09-03: 1.0.3, add __iter__ method, fix iterable issue, update test script.
+2020-06-16: 1.0.4, add support of zstd and custom pickle backend to speed up serialization.
 """
 
 
@@ -26,26 +38,30 @@ Changelog:
 #  keep track of every key's start and end positions.
 
 class Hyckle:
-    def __init__(self, filepath, compression='gzip', buffer_size=16, ignore_data_corruption=False):
+    def __init__(self, filepath, compression='auto', buffer_size=16, ignore_data_corruption=False, **kwargs):
         """
-        A high-level warpper of pickle that provides data serialization for all python-pickleable object
-        with the support of local read & write, better compression (approximately 50%-60% filesize smaller than original pickle @ default)
-        and more memory-friendly.
+        Hyckle is a high-level warpper of pickle that provides data serialization for
+        all python-pickleable object with the support of local read & write (like H5),
+        better compression (85% smaller than original pickle)
+        and more memory-efficient. Also it's a drop-in replacement for python dict and list.
 
-        一个pickle的高层封装，可以为所有可pickle的python变量提供数据序列化，
-        同时支持局部读写，拥有更好的压缩率（文件大小在默认模式下比原生pickle小了约50%-60%）,
-        并更节省内存。
+        Hyckle是pickle的一个高层封装，可以为所有可pickle的python变量提供数据序列化，
+        同时支持像H5一样的局部读写，拥有更好的压缩率（比原生pickle小了85%）,并更节省内存。
+        同时，它可以用于直接替换python的字典和列表。
 
         :param filepath: str
         :param compression: use str 'gzip' or int 0~9 to use gzip with 0-9 compression level (recommended),
                             or use str 'lzma' for better compression but much slower,
+                            but 'zstd' is the fastest and has the best compression level,
                             use None to disable compression.
-
                             Noted: if hyckle existed, it will force using the existed compression method
         :param buffer_size: int, flush to disk every k data input.
         :param ignore_data_corruption: bool
+
+        :param custom_dumps_func: function: for examples, pickle.dumps
+        :param custom_loads_func: function: for examples, pickle.loads
         """
-        assert compression in ['gzip', 'lzma', None] or isinstance(compression, int)
+        assert compression in ['auto', 'gzip', 'lzma', 'zstd', None] or isinstance(compression, int)
 
         self.keys = []
         self.ttl_counter = 0
@@ -55,7 +71,14 @@ class Hyckle:
         self.buffer_size = buffer_size
         self.filepath = filepath
         self.ignore_data_corruption = ignore_data_corruption
+        self.dumps_func = kwargs.get('custom_dumps_func', pickle.dumps)
+        self.loads_func = kwargs.get('custom_loads_func', pickle.loads)
 
+        if compression == 'auto':
+            if USE_ZSTD:
+                compression = 'zstd'
+            else:
+                compression = 'gzip'
         self._set_compression(compression)
 
         if not os.path.exists(self.filepath):
@@ -149,7 +172,10 @@ class Hyckle:
 
         elif compression == 'lzma':
             self.compression = lzma
-            self.compression_method = lzma
+            self.compression_method = 'lzma'
+        elif compression == 'zstd':
+            self.compression = zstd
+            self.compression_method = 'zstd'
         else:
             self.compression = None
             self.compression_method = None
@@ -172,7 +198,7 @@ class Hyckle:
         :param bin_data: binary data
         :return:
         """
-        bin_data = pickle.dumps(obj)
+        bin_data = self.dumps_func(obj)
         if self.compression is not None:
             if self.compression_method == 'gzip':
                 bin_data = self.compression.compress(bin_data, compresslevel=self.compression_level)
@@ -188,7 +214,7 @@ class Hyckle:
         if self.compression is not None:
             bin_data = self.compression.decompress(bin_data)
 
-        obj = pickle.loads(bin_data)
+        obj = self.loads_func(bin_data)
         return obj
 
     def _load_lines(self, lines):

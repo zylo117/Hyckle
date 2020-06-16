@@ -1,4 +1,5 @@
-# Author: Carl Cheung
+# Author: Zylo117
+import msgpack
 
 from hyckle import Hyckle
 
@@ -89,4 +90,11 @@ hk.flush()
 
 # close a hyckle file.
 # After final reading/writing hyckle, you should close it to ensure data integrity.
+hk.close()
+
+# custom_dumps_func and custom_loads_func
+hk = Hyckle('helloworld.hyckle', custom_dumps_func=msgpack.packb,
+            custom_loads_func=msgpack.unpackb)
+hk[1] = '123'
+a = hk['1']
 hk.close()

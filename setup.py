@@ -1,9 +1,10 @@
 """
 Hyckle
 --------------
-A memory-friendly warpper of pickle with better compression.
+A memory-efficient warpper of pickle with local IO and better compression.
 """
 import re
+
 from setuptools import setup
 
 with open('hyckle.py', 'rb') as f:
@@ -17,12 +18,17 @@ setup(
     license='GPL-3.0',
     author='zylo117',
     author_email='zylo117@hotmail.com',
-    description='A memory-friendly warpper of pickle with better compression.',
+    description='A memory-efficient warpper of pickle with local IO and better compression.',
     long_description=__doc__,
     py_modules=['hyckle'],
     zip_safe=False,
     include_package_data=True,
     platforms='any',
+    extras_requires={
+        'fast': [
+            'zstd>=1.4.5'
+        ]
+    },
     install_requires=[],
     classifiers=[
         'Development Status :: 4 - Beta',

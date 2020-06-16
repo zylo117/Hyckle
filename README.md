@@ -1,17 +1,26 @@
-**Hyckle is a high-level warpper of pickle that provides data serialization for all python-pickleable object with the support of local read & write, better compression (approximately 50%-60% filesize smaller than original pickle @ default) and more memory-friendly.**
+# Hyckle
 
-**Hyckle是pickle的一个高层封装，可以为所有可pickle的python变量提供数据序列化，同时支持局部读写，拥有更好的压缩率（文件大小在默认模式下比原生pickle小了约50%-60%）,并更节省内存。**
+## Introduction
+
+Hyckle is a high-level warpper of pickle that provides data serialization for 
+all python-pickleable object with the support of local read & write (like H5), 
+better compression (85% smaller than original pickle) 
+and more memory-efficient. Also it's a drop-in replacement for python dict and list.
+
+Hyckle是pickle的一个高层封装，可以为所有可pickle的python变量提供数据序列化，
+同时支持像H5一样的局部读写，拥有更好的压缩率（比原生pickle小了85%）,并更节省内存。
+同时，它可以用于直接替换python的字典和列表。
 
 ---
 
-**Installation**
+## Installation
 
     pip install hyckle
 
 ---
-**Demo:**
+## Demo
 
-**Basic Usage**
+### Basic Usage
 
     # create or reload a hyckle file. 
     # This will create a new hyckle file if not exists or reload a existed hyckle file.
@@ -61,7 +70,7 @@
     # After final reading/writing hyckle, you should close it to ensure data integrity.
     hk.close()
 
-**Advanced Usage**:
+### Advanced Usage
 
     # create a hyckle with custom compression,
     # lzma is much slower but smaller
